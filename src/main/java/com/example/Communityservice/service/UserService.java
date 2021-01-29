@@ -2,6 +2,8 @@ package com.example.Communityservice.service;
 
 import com.example.Communityservice.model.User;
 import com.example.Communityservice.repository.UserReposiotory;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -13,23 +15,19 @@ import java.util.List;
 import java.util.Optional;
 
 
-@RestController
+@Service
+@RequiredArgsConstructor
 public class UserService {
 
-    UserReposiotory reposiotory;
+    private final UserReposiotory reposiotory;
 
-    public UserService(UserReposiotory reposiotory){
-        this.reposiotory = reposiotory;
+
+
+    public ResponseEntity<List<User>> getUsersService(){
+          return ResponseEntity.ok(reposiotory.findAll());
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers(){
-         return ResponseEntity.ok(reposiotory.findAll());
-
-    }
-
-    @GetMapping("/users/{id}")
-    public ResponseEntity getUserByBd(@PathVariable Long id){
+    public ResponseEntity getUserByIdService(Long id){
         Optional<User> userFromDb = reposiotory.findById(id);
         if (userFromDb.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
@@ -37,8 +35,7 @@ public class UserService {
         return ResponseEntity.ok(reposiotory.findById(id));
     }
 
-    @PostMapping("/users")
-    public ResponseEntity addUser(@RequestBody User body) {
+    public ResponseEntity addUserService(User body) {
 
         Optional <User> userFromDb = reposiotory.findByusername(body.getUsername());
         if(userFromDb.isPresent()){
@@ -49,8 +46,7 @@ public class UserService {
         return ResponseEntity.ok(saveUser);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity login(@RequestBody User user){
+    public ResponseEntity loginService ( User user){
         Optional<User> userFromDb = reposiotory.findByusername(user.getUsername());
         if(userFromDb.isEmpty() || wrongpassword(userFromDb , user) ){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

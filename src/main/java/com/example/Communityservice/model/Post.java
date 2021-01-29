@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

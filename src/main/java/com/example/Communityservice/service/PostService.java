@@ -18,16 +18,19 @@ public class PostService {
     PostRepository postRepository;
     @Autowired
     UserReposiotory userReposiotory;
-    User user;
 
-    @PostMapping("/posts")
-    public ResponseEntity addPost (@RequestHeader(name = "username") String username, @RequestBody String postbody){
+    public ResponseEntity addPostService ( String username, String postbody){
         Optional<User> userFromdb = userReposiotory.findByusername(username);
         if(userFromdb.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Post post = new Post(userFromdb.get(), postbody);
-        userFromdb.get().setNumersOfPosts(userFromdb.get().getNumersOfPosts()+1);
+
+        Post post = Post.builder()
+                .user(userFromdb.get())
+                .body(postbody)
+                .build();
+
+        userFromdb.get().setNumbersOfPosts(userFromdb.get().getNumbersOfPosts()+1);
         Post savedpost = postRepository.save(post);
         return ResponseEntity.ok(savedpost);
     }

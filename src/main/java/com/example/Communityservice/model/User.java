@@ -23,6 +23,7 @@ public class User {
     @NonNull
     private String password;
 
-    private int numersOfPosts;
+    @Column(name = "number_of_posts")
+    private int numbersOfPosts;
 
 }
