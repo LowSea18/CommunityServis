@@ -4,6 +4,7 @@ import com.example.Communityservice.Exception.NotFoundException;
 import com.example.Communityservice.model.entityy.Post;
 import com.example.Communityservice.model.postDto.PostDto;
 import com.example.Communityservice.model.entityy.User;
+import com.example.Communityservice.model.postDto.PostUserDto;
 import com.example.Communityservice.model.userDto.UserInPost;
 import com.example.Communityservice.repository.PostRepository;
 import com.example.Communityservice.repository.UserReposiotory;
@@ -38,9 +39,9 @@ public class PostService {
 
     }
 
-    public UserInPost mapUsertoUserInPost(User user){
-        return new UserInPost(user.getUsername());
-    }
+    //public UserInPost mapUsertoUserInPost(User user){
+      //  return new UserInPost(user.getUsername());
+   // }
 
     public PostDto mapPostToPostDto(Post post){
         PostDto postDto = new PostDto();
@@ -50,15 +51,23 @@ public class PostService {
         return postDto;
     }
 
-    public List<PostDto> mapListPostToListDtoToPost(List<Post> posts) {
-        List <PostDto> postDtos = new ArrayList<>();
-        posts.forEach(p -> postDtos.add(mapPostToPostDto(p)));
+    public List<PostUserDto> mapListPostToListDtoToPost(List<Post> posts) {
+        List <PostUserDto> postDtos = new ArrayList<>();
+        posts.forEach(p -> postDtos.add(mapPostDtoToPostUserDto(p)));
         return postDtos;
     }
     public List<PostDto> showPosts(){
         List<PostDto> postDtos = new ArrayList<>();
         postRepository.findAll().forEach(p -> postDtos.add(mapPostToPostDto(p)));
         return postDtos;
+    }
+
+    public PostUserDto mapPostDtoToPostUserDto(Post post){
+        PostUserDto postUserDto = new PostUserDto();
+        postUserDto.setId(post.getId());
+        postUserDto.setBody(post.getBody());
+        return postUserDto;
+
     }
 
 

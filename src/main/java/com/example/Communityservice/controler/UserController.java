@@ -4,6 +4,7 @@ package com.example.Communityservice.controler;
 import com.example.Communityservice.model.CreateUserDto.CreateUserDto;
 import com.example.Communityservice.model.LoginRequestDto.LoginRequestDto;
 import com.example.Communityservice.model.entityy.User;
+import com.example.Communityservice.model.userDto.UpdateUserDto;
 import com.example.Communityservice.model.userDto.UserDto;
 import com.example.Communityservice.model.userDto.UserWithPostDto;
 import com.example.Communityservice.service.UserService;
@@ -46,6 +47,10 @@ public class UserController {
          userService.loginService(credentials);
     }
 
+    @PutMapping("/user/{id}")
+    public void updateUser(@PathVariable Long id, @RequestBody UpdateUserDto updateUserDto){
+        userService.updateUser(id,updateUserDto);
+    }
 
 
 }

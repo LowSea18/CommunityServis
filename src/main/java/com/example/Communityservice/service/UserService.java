@@ -7,6 +7,7 @@ import com.example.Communityservice.Exception.WrongAgeException;
 import com.example.Communityservice.model.CreateUserDto.CreateUserDto;
 import com.example.Communityservice.model.LoginRequestDto.LoginRequestDto;
 import com.example.Communityservice.model.entityy.User;
+import com.example.Communityservice.model.userDto.UpdateUserDto;
 import com.example.Communityservice.model.userDto.UserDto;
 import com.example.Communityservice.model.userDto.UserWithPostDto;
 import com.example.Communityservice.model.userDto.UserInPost;
@@ -68,6 +69,14 @@ public class UserService {
         System.out.println("Login Complete");
     }
 
+    public void updateUser(Long id , UpdateUserDto updateUserDto){
+       User user = reposiotory.findById(id).orElseThrow( ()-> new NotFoundException("User does not exist, id:" + id));
+        user.setUsername(updateUserDto.getUsername());
+        user.setPassword(updateUserDto.getPassword());
+        user.setAge(updateUserDto.getAge());
+        reposiotory.save(user);
+    }
+
 
     public User mapCreateDtoToUser(CreateUserDto createUserDto){
         User user = new User();
@@ -95,6 +104,7 @@ public class UserService {
 
     public UserDto mapUserToUserDto(User user){
         UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
         userDto.setUsername(user.getUsername());
         userDto.setAge(user.getAge());
         userDto.setNumberOfPosts(user.getPosts().size());

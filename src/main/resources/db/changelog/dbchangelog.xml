@@ -13,4 +13,5 @@
     <include file="version/adding_ageColumn_in_PersonTable.xml" relativeToChangelogFile="true"/>
     <include file="version/drop_numberofposts_column.xml" relativeToChangelogFile="true"/>
 
+
 </databaseChangeLog>

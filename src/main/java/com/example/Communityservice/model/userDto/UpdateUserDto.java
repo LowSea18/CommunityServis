@@ -3,9 +3,8 @@ package com.example.Communityservice.model.userDto;
 import lombok.Data;
 
 @Data
-public class UserDto {
-    private Long id;
+public class UpdateUserDto {
     private String username;
+    private String password;
     private int age;
-    private int numberOfPosts;
 }
