@@ -39,9 +39,13 @@ public class PostService {
 
     }
 
-    //public UserInPost mapUsertoUserInPost(User user){
-      //  return new UserInPost(user.getUsername());
-   // }
+    public void updatePost(Integer id, String body){
+        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist id," +id));
+        post.setBody(body);
+        postRepository.save(post);
+    }
+
+
 
     public PostDto mapPostToPostDto(Post post){
         PostDto postDto = new PostDto();
