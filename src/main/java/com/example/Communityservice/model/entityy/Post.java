@@ -1,4 +1,4 @@
-package com.example.Communityservice.model;
+package com.example.Communityservice.model.entityy;
 
 import lombok.*;
 
@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Post {
     @Id
@@ -18,7 +19,7 @@ public class Post {
 
     @NonNull
     @ManyToOne
-    User user;
+    private User user;
 
     @NonNull
     private String body;

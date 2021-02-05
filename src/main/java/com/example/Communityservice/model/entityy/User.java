@@ -1,4 +1,4 @@
-package com.example.Communityservice.model;
+package com.example.Communityservice.model.entityy;
 
 import lombok.*;
 
@@ -23,7 +23,8 @@ public class User {
     @NonNull
     private String password;
 
-    @Column(name = "number_of_posts")
-    private int numbersOfPosts;
+    private int age;
+    @OneToMany(mappedBy="user")
+    private List<Post> posts;
 
 }
