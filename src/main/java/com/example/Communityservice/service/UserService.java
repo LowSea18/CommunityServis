@@ -4,6 +4,7 @@ import com.example.Communityservice.Exception.AlreadyExistException;
 import com.example.Communityservice.Exception.FailedToLoginException;
 import com.example.Communityservice.Exception.NotFoundException;
 import com.example.Communityservice.Exception.WrongAgeException;
+import com.example.Communityservice.mapping.Mapping;
 import com.example.Communityservice.model.CreateUserDto.CreateUserDto;
 import com.example.Communityservice.model.LoginRequestDto.LoginRequestDto;
 import com.example.Communityservice.model.entityy.User;
@@ -11,8 +12,12 @@ import com.example.Communityservice.model.userDto.UpdateUserDto;
 import com.example.Communityservice.model.userDto.UserDto;
 import com.example.Communityservice.model.userDto.UserWithPostDto;
 import com.example.Communityservice.model.userDto.UserInPost;
+import com.example.Communityservice.repository.PostRepository;
 import com.example.Communityservice.repository.UserReposiotory;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,94 +26,79 @@ import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
+
 public class UserService {
-
+    @Autowired
     private final UserReposiotory reposiotory;
+    @Autowired
+    private final Mapping mapping;
+    @Autowired
+    private final PostRepository postRepository;
 
-    private final PostService postService;
+    public UserService(UserReposiotory userReposiotory,Mapping mapping,PostRepository postRepository){
+       this.reposiotory=userReposiotory;
+       this.mapping=mapping;
+       this.postRepository=postRepository;
+    }
 
     public List<UserDto> getAllUsers(){
         List<UserDto> userDtos = new ArrayList<>();
-        reposiotory.findAll().forEach(u -> userDtos.add(mapUserToUserDto(u)));
+        reposiotory.findAll().forEach(u -> userDtos.add(mapping.mapUserToUserDto(u)));
         return userDtos;
     }
 
     public List<UserWithPostDto> getUsersWithPostsService(){
         List<UserWithPostDto> users = new ArrayList<>();
-        reposiotory.findAll().forEach(u -> users.add(mapUserToUserWithPostDto(u)));
+        reposiotory.findAll().forEach(u -> users.add(mapping.mapUserToUserWithPostDto(u)));
         return users;
     }
 
-    public User getUserByIdService(Long id){
+    public UserDto getUserByIdService(Long id){
         User userFromDb = reposiotory.findById(id).orElseThrow(() -> new NotFoundException("Can not found User, id: "+id));
-
-        return userFromDb;
+        return mapping.mapUserToUserDto(userFromDb);
     }
 
     public void addUserService(CreateUserDto body) {
 
-        if(body.getAge()<=0){
-            throw new WrongAgeException("Age must be greater than zero");
+        if(body.getAge()<18){
+            throw new WrongAgeException("Age must be greater than 18");
         }else {
-
-            Optional<User> userFromDb = reposiotory.findByusername(body.getUsername());
-            if (userFromDb.isPresent()) {
+            Optional <User> userFromDb = reposiotory.findByusername(body.getUsername());
+            if(userFromDb.isPresent()){
                 throw new AlreadyExistException("User with this username already exist");
-            } else
-                reposiotory.save(mapCreateDtoToUser(body));
-            System.out.println("Created");
+            }else
+            reposiotory.save(mapping.mapCreateDtoToUser(body));
         }
+
     }
 
     public void loginService (LoginRequestDto user){
-        User userFromDb = reposiotory.findByusername(user.getUsername()).orElseThrow(() ->new NotFoundException(""));
+        User userFromDb = reposiotory.findByusername(user.getUsername()).orElseThrow(() ->new NotFoundException("Login Failed"));
         if(!userFromDb.getPassword().equals(user.getPassword()) ){
             throw new FailedToLoginException("Login Failed");
         }
-        System.out.println("Login Complete");
+
     }
 
     public void updateUser(Long id , UpdateUserDto updateUserDto){
-       User user = reposiotory.findById(id).orElseThrow( ()-> new NotFoundException("User does not exist, id:" + id));
+        if(updateUserDto.getAge()<18){
+            throw new WrongAgeException("Age must be greater than 18");
+        }else {
+        User user = reposiotory.findById(id).orElseThrow( ()-> new NotFoundException("User does not exist, id:" + id));
         user.setUsername(updateUserDto.getUsername());
         user.setPassword(updateUserDto.getPassword());
         user.setAge(updateUserDto.getAge());
         reposiotory.save(user);
+        }
     }
 
+    public void deleteUser(Long id){
+        User user = reposiotory.findById(id).orElseThrow( ()-> new NotFoundException("User does not exist, id:" + id));
+        if (!user.getPosts().isEmpty()) {
+            user.getPosts().forEach(postRepository::delete);
+        }
+        reposiotory.delete(user);
 
-    public User mapCreateDtoToUser(CreateUserDto createUserDto){
-        User user = new User();
-        user.setUsername(createUserDto.getUsername());
-        user.setPassword(createUserDto.getPassword());
-        user.setAge(createUserDto.getAge());
-        return user;
-    }
-
-    public UserWithPostDto mapUserToUserWithPostDto(User user){
-        UserWithPostDto userDto = new UserWithPostDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setAge(user.getAge());
-        userDto.setPosts(postService.mapListPostToListDtoToPost(user.getPosts()));
-        return userDto;
-    }
-
-    public UserWithPostDto mapUserDtoInPostToUser (UserInPost userInPost){
-       UserWithPostDto user = new UserWithPostDto();
-        user.setUsername(userInPost.getUsername());
-
-        return user;
-    }
-
-    public UserDto mapUserToUserDto(User user){
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setAge(user.getAge());
-        userDto.setNumberOfPosts(user.getPosts().size());
-        return userDto;
     }
 
 

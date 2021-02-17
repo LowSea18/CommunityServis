@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable Long id){
+    public UserDto getUserById(@PathVariable Long id){
         return userService.getUserByIdService(id);
 
     }
@@ -44,12 +44,17 @@ public class UserController {
 
     @PostMapping("/login")
     public void login(@RequestBody LoginRequestDto credentials){
-         userService.loginService(credentials);
+        userService.loginService(credentials);
     }
 
     @PutMapping("/user/{id}")
     public void updateUser(@PathVariable Long id, @RequestBody UpdateUserDto updateUserDto){
         userService.updateUser(id,updateUserDto);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public void deleteUser(@PathVariable(name = "id") Long id){
+        userService.deleteUser(id);
     }
 
 

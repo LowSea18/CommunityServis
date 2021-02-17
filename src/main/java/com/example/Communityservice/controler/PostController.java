@@ -30,4 +30,10 @@ public class PostController {
         postService.updatePost(id,body);
     }
 
+    @DeleteMapping("post/{id}")
+    public void deletePost(@PathVariable Integer id){
+
+        postService.deletePost(id);
+    }
+
 }

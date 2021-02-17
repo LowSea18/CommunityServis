@@ -1,6 +1,7 @@
 package com.example.Communityservice.service;
 
 import com.example.Communityservice.Exception.NotFoundException;
+import com.example.Communityservice.mapping.Mapping;
 import com.example.Communityservice.model.entityy.Post;
 import com.example.Communityservice.model.postDto.PostDto;
 import com.example.Communityservice.model.entityy.User;
@@ -8,6 +9,7 @@ import com.example.Communityservice.model.postDto.PostUserDto;
 import com.example.Communityservice.model.userDto.UserInPost;
 import com.example.Communityservice.repository.PostRepository;
 import com.example.Communityservice.repository.UserReposiotory;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +21,28 @@ import java.util.Optional;
 @Service
 public class PostService {
     @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
     @Autowired
-    private UserReposiotory userReposiotory;
-    private UserService userService;
+    private final UserReposiotory userReposiotory;
+    @Autowired
+    private final UserService userService;
+    @Autowired
+    private final Mapping mapping;
+
+    public PostService(PostRepository postRepository,UserReposiotory userReposiotory,UserService userService,Mapping mapping){
+        this.postRepository=postRepository;
+        this.userReposiotory=userReposiotory;
+        this.userService=userService;
+        this.mapping=mapping;
+    }
 
     public void addPostService ( String username, String postBody){
-        Optional<User> userFromdb = userReposiotory.findByusername(username);
-        if(userFromdb.isEmpty()){
-            throw new NotFoundException("Can not found User " + username);
-        }else {
-            Post post = Post.builder()
-                    .user((userFromdb.get()))
-                    .body(postBody)
-                    .build();
-            postRepository.save(post);
-            System.out.println("Post created");
-        }
-
+        User userFromdb = userReposiotory.findByusername(username).orElseThrow(()->new NotFoundException("Can not found User " + username));
+        Post post = new Post();
+        post.setBody(postBody);
+        post.setUser(userFromdb);
+        postRepository.save(post);
+        System.out.println("Post created");
     }
 
     public void updatePost(Integer id, String body){
@@ -45,34 +51,18 @@ public class PostService {
         postRepository.save(post);
     }
 
-
-
-    public PostDto mapPostToPostDto(Post post){
-        PostDto postDto = new PostDto();
-        postDto.setBody(post.getBody());
-        postDto.setId(post.getId());
-        postDto.setUserId(post.getUser().getId());
-        return postDto;
-    }
-
-    public List<PostUserDto> mapListPostToListDtoToPost(List<Post> posts) {
-        List <PostUserDto> postDtos = new ArrayList<>();
-        posts.forEach(p -> postDtos.add(mapPostDtoToPostUserDto(p)));
-        return postDtos;
-    }
     public List<PostDto> showPosts(){
         List<PostDto> postDtos = new ArrayList<>();
-        postRepository.findAll().forEach(p -> postDtos.add(mapPostToPostDto(p)));
+        postRepository.findAll().forEach(p -> postDtos.add(mapping.mapPostToPostDto(p)));
         return postDtos;
     }
 
-    public PostUserDto mapPostDtoToPostUserDto(Post post){
-        PostUserDto postUserDto = new PostUserDto();
-        postUserDto.setId(post.getId());
-        postUserDto.setBody(post.getBody());
-        return postUserDto;
-
+    public void deletePost(Integer id){
+        Post postFromDb = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        postRepository.delete(postFromDb);
     }
+
+
 
 
 }
