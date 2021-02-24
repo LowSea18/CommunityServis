@@ -1,4 +1,4 @@
-package com.example.Communityservice;
+package com.example.Communityservice.tests;
 
 import com.example.Communityservice.Exception.NotFoundException;
 import com.example.Communityservice.repository.PostRepository;

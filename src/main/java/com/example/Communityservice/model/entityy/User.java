@@ -23,8 +23,9 @@ public class User {
     @NonNull
     private String password;
 
+
     private int age;
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", fetch = FetchType.EAGER)
     private List<Post> posts;
 
 }

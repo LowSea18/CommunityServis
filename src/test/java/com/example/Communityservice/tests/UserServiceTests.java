@@ -1,4 +1,4 @@
-package com.example.Communityservice;
+package com.example.Communityservice.tests;
 
 import com.example.Communityservice.Exception.AlreadyExistException;
 import com.example.Communityservice.Exception.FailedToLoginException;
@@ -38,7 +38,7 @@ public class UserServiceTests {
     @Test
     void shouldNotAddUser_userHaveWrongAge_throw_WrongAgeEx(){
         CreateUserDto createUserDto = new CreateUserDto();
-        createUserDto.setAge(17);
+        createUserDto.setAge(6);
         UserService toTest = new UserService(null,null,null);
         assertThrows(WrongAgeException.class, () -> {
             toTest.addUserService(createUserDto);
@@ -90,7 +90,7 @@ public class UserServiceTests {
     @Test
     void shouldNotUpdateUser_wrongAge_throw_WrongAgeEx(){
         UpdateUserDto updateUserDto = new UpdateUserDto();
-        updateUserDto.setAge(17);
+        updateUserDto.setAge(6);
         UserService toTest = new UserService(null,null,null);
         assertThrows(WrongAgeException.class, () -> {
             toTest.updateUser(1L,updateUserDto);

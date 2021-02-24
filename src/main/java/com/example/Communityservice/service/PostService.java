@@ -21,13 +21,13 @@ import java.util.Optional;
 @Service
 public class PostService {
     @Autowired
-    private final PostRepository postRepository;
+    private PostRepository postRepository;
     @Autowired
-    private final UserReposiotory userReposiotory;
+    private UserReposiotory userReposiotory;
     @Autowired
-    private final UserService userService;
+    private UserService userService;
     @Autowired
-    private final Mapping mapping;
+    private Mapping mapping;
 
     public PostService(PostRepository postRepository,UserReposiotory userReposiotory,UserService userService,Mapping mapping){
         this.postRepository=postRepository;

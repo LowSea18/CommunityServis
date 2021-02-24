@@ -29,11 +29,11 @@ import java.util.Optional;
 
 public class UserService {
     @Autowired
-    private final UserReposiotory reposiotory;
+    private  UserReposiotory reposiotory;
     @Autowired
-    private final Mapping mapping;
+    private  Mapping mapping;
     @Autowired
-    private final PostRepository postRepository;
+    private PostRepository postRepository;
 
     public UserService(UserReposiotory userReposiotory,Mapping mapping,PostRepository postRepository){
        this.reposiotory=userReposiotory;
@@ -60,8 +60,8 @@ public class UserService {
 
     public void addUserService(CreateUserDto body) {
 
-        if(body.getAge()<18){
-            throw new WrongAgeException("Age must be greater than 18");
+        if(body.getAge()<7){
+            throw new WrongAgeException("Age must be greater than 7");
         }else {
             Optional <User> userFromDb = reposiotory.findByusername(body.getUsername());
             if(userFromDb.isPresent()){
@@ -81,8 +81,8 @@ public class UserService {
     }
 
     public void updateUser(Long id , UpdateUserDto updateUserDto){
-        if(updateUserDto.getAge()<18){
-            throw new WrongAgeException("Age must be greater than 18");
+        if(updateUserDto.getAge()<12){
+            throw new WrongAgeException("Age must be greater than 7");
         }else {
         User user = reposiotory.findById(id).orElseThrow( ()-> new NotFoundException("User does not exist, id:" + id));
         user.setUsername(updateUserDto.getUsername());
